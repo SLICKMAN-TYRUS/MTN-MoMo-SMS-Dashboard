@@ -1,6 +1,7 @@
 -- Create database (run this separately if needed)
 CREATE DATABASE IF NOT EXISTS momo_sms CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE momo_sms;
+USE USE my_momo_dashboard_db;
+;
 
 -- Table for transaction categories
 CREATE TABLE IF NOT EXISTS transaction_types (
