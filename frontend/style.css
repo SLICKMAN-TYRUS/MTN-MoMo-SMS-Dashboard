@@ -1,0 +1,126 @@
+/* style.css */
+
+/* General page styles */
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f7f9fb;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+/* Header styling */
+header {
+  background-color: #002c5f;
+  color: white;
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Filters section */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background-color: white;
+  border-bottom: 1px solid #ddd;
+}
+
+.filters label {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.9rem;
+}
+
+.filters input,
+.filters select,
+.filters button {
+  padding: 0.5rem;
+  margin-top: 0.3rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+#applyFilters {
+  align-self: flex-end;
+  background-color: #0057d9;
+  color: white;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#applyFilters:hover {
+  background-color: #0043ad;
+}
+
+/* Charts section */
+.charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  padding: 2rem;
+}
+
+/* Table section */
+.table-section {
+  padding: 2rem;
+  background-color: white;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  font-size: 0.95rem;
+}
+
+thead {
+  background-color: #f0f0f0;
+}
+
+th, td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+tbody tr:hover {
+  background-color: #e6f2ff;
+  cursor: pointer;
+}
+
+/* Details panel */
+.details {
+  padding: 2rem;
+  background-color: #f4f6f8;
+}
+
+.details h3 {
+  margin-bottom: 1rem;
+}
+
+.details pre {
+  background-color: white;
+  padding: 1.5rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  white-space: pre-wrap;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .filters {
+    flex-direction: column;
+  }
+
+  .charts {
+    grid-template-columns: 1fr;
+  }
+}
