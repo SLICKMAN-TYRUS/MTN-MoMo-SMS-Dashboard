@@ -13,20 +13,30 @@ def normalize_amount(amount_str):
     return int(amount_str.replace(",", "").strip())
 
 def extract_transaction_type(body):
-    body_lower = body.lower()
-    if "you have received" in body_lower:
+    body = body.lower()
+
+    if "you have received" in body:
         return "Incoming Money"
-    elif "your payment of" in body_lower and "airtime" in body_lower:
-        return "Airtime Payment"
-    elif "your payment of" in body_lower and "cash power" in body_lower:
-        return "Cash Power Payment"
-    elif "your payment of" in body_lower:
-        return "General Payment"
-    elif "withdrawn" in body_lower and "agent" in body_lower:
-        return "Agent Withdrawal"
-    elif "one-time password" in body_lower:
-        return "OTP / Non-transactional"
-    return None
+    elif "your payment of" in body and ("code holder" in body or "has been completed" in body):
+        return "Payments to Code Holders"
+    elif "*165*" in body and "transferred to" in body:
+        return "Transfers to Mobile Numbers"
+    elif "*113*" in body and "bank deposit" in body:
+        return "Bank Deposits"
+    elif "airtime" in body and "payment" in body:
+        return "Airtime Bill Payments"
+    elif "cash power" in body:
+        return "Cash Power Bill Payments"
+    elif "direct payment ltd" in body or "third party" in body:
+        return "Transactions Initiated by Third Parties"
+    elif "withdrawn" in body and "agent" in body:
+        return "Withdrawals from Agents"
+    elif "bank transfer" in body or ("transfer" in body and "bank" in body):
+        return "Bank Transfers"
+    elif "internet bundle" in body or "voice bundle" in body:
+        return "Internet and Voice Bundle Purchases"
+    else:
+        return None
 
 def parse_body(body):
     tx_type = extract_transaction_type(body)
