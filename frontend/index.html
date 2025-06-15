@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MoMo Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MTN MoMo SMS Dashboard</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -13,6 +13,13 @@
   </header>
 
   <section class="filters">
+    <input
+      type="text"
+      id="searchInput"
+      placeholder="Search transactions..."
+      aria-label="Search transactions"
+    />
+
     <label>
       Type:
       <select id="filterType">
@@ -32,13 +39,14 @@
       <input type="number" id="maxAmount" placeholder="Max" />
     </label>
 
-    <button id="applyFilters">Filter</button>
+    <button id="applyFilters">Apply Filters</button>
+    <button id="clearFilters">Clear Filters</button>
   </section>
 
-  <section class="charts">
-    <canvas id="typeChart"></canvas>
-    <canvas id="monthlyChart"></canvas>
-    <canvas id="distributionChart"></canvas>
+  <section class="charts-container">
+    <canvas id="volumeByTypeChart"></canvas>
+    <canvas id="monthlySummaryChart"></canvas>
+    <canvas id="paymentsVsDepositsChart"></canvas>
   </section>
 
   <section class="table-section">
@@ -47,7 +55,7 @@
       <thead>
         <tr>
           <th>Type</th>
-          <th>Amount</th>
+          <th>Amount (RWF)</th>
           <th>Date</th>
           <th>Receiver</th>
         </tr>
@@ -57,8 +65,8 @@
   </section>
 
   <section class="details">
-    <h3>Details</h3>
-    <pre id="transactionDetails">Click a row to see full details.</pre>
+    <h3>Transaction Details</h3>
+    <pre id="transactionDetails">Click on a transaction to see details here.</pre>
   </section>
 
   <script src="app.js"></script>
