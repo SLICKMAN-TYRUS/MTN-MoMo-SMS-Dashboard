@@ -5,7 +5,11 @@ function renderCharts(data) {
   const ctx2 = document.getElementById("monthlySummaryChart").getContext("2d");
   const ctx3 = document.getElementById("paymentsVsDepositsChart").getContext("2d");
 
-  // Prepare data aggregations
+  // Reset previous charts
+  volumeByTypeChart?.destroy();
+  monthlySummaryChart?.destroy();
+  paymentsVsDepositsChart?.destroy();
+
   const typeTotals = {};
   const monthTotals = {};
   let paymentsTotal = 0;
@@ -16,26 +20,22 @@ function renderCharts(data) {
     const amount = parseFloat(tx.amount) || 0;
     const month = (tx.datetime || "").slice(0, 7); // YYYY-MM
 
-    // Sum by type
     typeTotals[type] = (typeTotals[type] || 0) + amount;
-
-    // Sum by month
     if (month) monthTotals[month] = (monthTotals[month] || 0) + amount;
 
-    // Sum payments vs deposits (simple heuristic)
     if (type.toLowerCase().includes("payment")) paymentsTotal += amount;
     else if (type.toLowerCase().includes("deposit")) depositsTotal += amount;
   });
 
-  // Sort months for line chart
   const sortedMonths = Object.keys(monthTotals).sort();
+  const complementaryColors = [
+    "#00c7b1", // Turquoise
+    "#ff6b6b", // Coral
+    "#6c5ce7", // Purple
+    "#f5f5f5"  // Light Gray
+  ];
 
-  // Destroy old charts if they exist
-  volumeByTypeChart?.destroy();
-  monthlySummaryChart?.destroy();
-  paymentsVsDepositsChart?.destroy();
-
-  // Chart 1: Bar chart - Total Volume by Transaction Type
+  // Volume by Type - Bar Chart
   volumeByTypeChart = new Chart(ctx1, {
     type: "bar",
     data: {
@@ -43,17 +43,30 @@ function renderCharts(data) {
       datasets: [{
         label: "Total Volume (RWF)",
         data: Object.values(typeTotals),
-        backgroundColor: "#ffd500" // MTN Yellow
+        backgroundColor: Object.keys(typeTotals).map((_, i) =>
+          [ "#ffd500", "#002c5f", ...complementaryColors ][i % 6]
+        ),
+        borderRadius: 6,
+        hoverOffset: 10
       }]
     },
     options: {
       responsive: true,
+      animation: {
+        duration: 1000,
+        easing: "easeOutBounce"
+      },
       plugins: {
         title: {
           display: true,
           text: "Total Transaction Volume by Type",
           color: "#002c5f",
-          font: { size: 18, weight: "700" }
+          font: { size: 20, weight: "bold" }
+        },
+        tooltip: {
+          backgroundColor: "#002c5f",
+          titleColor: "#fff",
+          bodyColor: "#ffd500"
         },
         legend: { display: false }
       },
@@ -71,7 +84,7 @@ function renderCharts(data) {
     }
   });
 
-  // Chart 2: Line chart - Monthly Transaction Volume
+  // Monthly Trend - Line Chart
   monthlySummaryChart = new Chart(ctx2, {
     type: "line",
     data: {
@@ -82,19 +95,28 @@ function renderCharts(data) {
         borderColor: "#002c5f",
         backgroundColor: "rgba(0, 44, 95, 0.2)",
         fill: true,
-        tension: 0.3,
-        pointRadius: 5,
+        tension: 0.4,
+        pointBackgroundColor: "#ffd500",
         pointHoverRadius: 7
       }]
     },
     options: {
       responsive: true,
+      animation: {
+        duration: 1200,
+        easing: "easeInOutQuart"
+      },
       plugins: {
         title: {
           display: true,
           text: "Monthly Transaction Volume Trend",
           color: "#002c5f",
-          font: { size: 18, weight: "700" }
+          font: { size: 20, weight: "bold" }
+        },
+        tooltip: {
+          backgroundColor: "#ffd500",
+          titleColor: "#002c5f",
+          bodyColor: "#002c5f"
         },
         legend: { display: false }
       },
@@ -102,7 +124,7 @@ function renderCharts(data) {
         y: {
           beginAtZero: true,
           ticks: { color: "#002c5f" },
-          grid: { color: "#eee" }
+          grid: { color: "#f0f0f0" }
         },
         x: {
           ticks: { color: "#002c5f" },
@@ -112,32 +134,44 @@ function renderCharts(data) {
     }
   });
 
-  // Chart 3: Pie chart - Payments vs Deposits Distribution
+  // Payments vs Deposits - Donut Chart
+  const otherTotal = Math.max(0, Object.values(typeTotals).reduce((a, b) => a + b, 0) - paymentsTotal - depositsTotal);
+
   paymentsVsDepositsChart = new Chart(ctx3, {
-    type: "pie",
+    type: "doughnut",
     data: {
       labels: ["Payments", "Deposits", "Others"],
       datasets: [{
-        data: [paymentsTotal, depositsTotal, Math.max(0, Object.values(typeTotals).reduce((a, b) => a + b, 0) - paymentsTotal - depositsTotal)],
-        backgroundColor: [
-          "#ffd500",    // Yellow for Payments
-          "#002c5f",    // Dark Blue for Deposits
-          "#888888"     // Gray for Others
-        ]
+        data: [paymentsTotal, depositsTotal, otherTotal],
+        backgroundColor: ["#ffd500", "#002c5f", "#888888"],
+        hoverOffset: 12
       }]
     },
     options: {
       responsive: true,
+      cutout: "60%",
+      animation: {
+        animateRotate: true,
+        duration: 1500
+      },
       plugins: {
         title: {
           display: true,
           text: "Distribution of Payments vs Deposits",
           color: "#002c5f",
-          font: { size: 18, weight: "700" }
+          font: { size: 20, weight: "bold" }
+        },
+        tooltip: {
+          backgroundColor: "#002c5f",
+          titleColor: "#fff",
+          bodyColor: "#ffd500"
         },
         legend: {
           position: "bottom",
-          labels: { color: "#002c5f", font: { size: 14 } }
+          labels: {
+            color: "#002c5f",
+            font: { size: 14 }
+          }
         }
       }
     }

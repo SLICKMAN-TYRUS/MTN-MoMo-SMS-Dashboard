@@ -1,130 +1,244 @@
-/* Base Styles */
-body {
-  font-family: 'Avenir Next LT Pro', sans-serif;
-  background-color: #ffffff;
+/* === RESET & BASE === */
+* {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  color: #002f6c;
 }
 
+body {
+  font-family: "Avenir Next", "Avenir", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background-color: #f2f2f2;
+  color: #002663;
+  padding: 1.5rem 1rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* === HEADER === */
 header {
-  background-color: #FFCC00;
-  color: #002f6c;
-  padding: 1.2rem;
   text-align: center;
-  font-size: 1.6rem;
-  font-weight: bold;
-  border-bottom: 3px solid #002f6c;
-}
-
-.container {
-  max-width: 1200px;
-  margin: auto;
-  padding: 1rem 1.5rem;
-}
-
-/* Filter Section */
-.filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: space-between;
   margin-bottom: 2rem;
 }
 
-.filters label,
-.filters input,
-.filters select {
-  flex: 1;
-  min-width: 180px;
-  font-size: 0.95rem;
-  padding: 0.4rem 0.6rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+h1 {
+  color: #ffcc00;
+  font-weight: 800;
+  font-size: 3rem;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-/* Table Styling */
+/* === FILTERS SECTION === */
+.filters {
+  background: #002663;
+  color: #ffcc00;
+  padding: 1.25rem 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem 2rem;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(0, 38, 99, 0.25);
+}
+
+.filters input[type="text"],
+.filters select,
+.filters input[type="date"],
+.filters input[type="number"] {
+  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
+  border: none;
+  font-size: 1rem;
+  min-width: 140px;
+  transition: box-shadow 0.25s ease;
+  font-weight: 600;
+  color: #002663;
+}
+
+.filters input[type="text"]:focus,
+.filters select:focus,
+.filters input[type="date"]:focus,
+.filters input[type="number"]:focus {
+  outline: none;
+  box-shadow: 0 0 8px #ffcc00;
+}
+
+.filters label {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.95rem;
+  font-weight: 700;
+  min-width: 140px;
+  color: #ffcc00;
+}
+
+.filters button {
+  background-color: #ffcc00;
+  color: #002663;
+  border: none;
+  padding: 0.65rem 1.4rem;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  min-width: 140px;
+  box-shadow: 0 4px 6px rgba(255, 204, 0, 0.5);
+  transition: background-color 0.3s ease, transform 0.15s ease;
+}
+
+.filters button:hover {
+  background-color: #e6b800;
+  transform: translateY(-2px);
+}
+
+.filters button:active {
+  transform: translateY(1px);
+}
+
+/* === CHARTS CONTAINER === */
+.charts-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+  margin-bottom: 3rem;
+}
+
+.charts-container canvas {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(0, 38, 99, 0.15);
+  flex: 1 1 320px;
+  max-width: 600px;
+  height: 320px !important;
+  padding: 0.5rem;
+  transition: box-shadow 0.3s ease;
+}
+
+.charts-container canvas:hover {
+  box-shadow: 0 8px 24px rgba(0, 38, 99, 0.3);
+}
+
+/* === TABLE SECTION === */
+.table-section {
+  overflow-x: auto;
+  margin-bottom: 3rem;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(0, 38, 99, 0.1);
+  padding: 1rem 1rem 0.5rem 1rem;
+}
+
+h2 {
+  color: #002663;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  font-size: 1.8rem;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 2rem;
-  background-color: #f9f9f9;
+  font-size: 1rem;
+  min-width: 650px;
+  font-weight: 600;
 }
 
-table th,
-table td {
-  border: 1px solid #dee2e6;
-  padding: 0.75rem;
+thead {
+  background-color: #ffcc00;
+  color: #002663;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+th,
+td {
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid #e0e0e0;
   text-align: left;
-  font-size: 0.95rem;
+  vertical-align: middle;
+  transition: background-color 0.2s ease;
 }
 
-table th {
-  background-color: #f0f0f0;
-  font-weight: bold;
-  color: #002f6c;
+tbody tr:hover {
+  background-color: #ff8c42;
+  color: white;
+  cursor: pointer;
+  font-weight: 700;
 }
 
-table tr:hover {
-  background-color: #f1f9ff;
+/* === TRANSACTION DETAILS === */
+.details {
+  background-color: #7fc97f;
+  border-left: 8px solid #ffcc00;
+  padding: 1.2rem 1.5rem;
+  border-radius: 10px;
+  font-family: 'Courier New', Courier, monospace;
+  white-space: pre-wrap;
+  max-height: 260px;
+  overflow-y: auto;
+  color: #002663;
+  box-shadow: 0 4px 14px rgba(0, 38, 99, 0.1);
+  font-size: 1rem;
+  font-weight: 600;
 }
 
-/* Transaction Details Box */
-.transaction-details {
-  margin-top: 2rem;
+/* === LOADER === */
+#loader {
+  display: none;
+  text-align: center;
+  margin: 2rem auto;
   padding: 1rem 1.5rem;
-  background-color: #fff;
-  border: 2px solid #FFCC00;
-  border-radius: 4px;
-  color: #333;
+  background-color: #fffbe6;
+  color: #002663;
+  font-weight: bold;
+  font-size: 1.1rem;
+  border: 2px solid #ffcc00;
+  border-radius: 8px;
+  width: fit-content;
+  box-shadow: 0 4px 12px rgba(0, 38, 99, 0.1);
 }
 
-.transaction-details h3 {
-  margin-top: 0;
-  color: #002f6c;
-}
-
-/* Charts */
-canvas {
-  max-width: 100%;
-  height: auto;
-  margin-bottom: 2rem;
-}
-
-/* Responsive Layout */
-@media (max-width: 768px) {
+/* === RESPONSIVE === */
+@media (max-width: 900px) {
   .filters {
     flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
   }
 
-  table, thead, tbody, th, td, tr {
-    display: block;
-    width: 100%;
+  .filters label,
+  .filters input[type="text"],
+  .filters select,
+  .filters input[type="date"],
+  .filters input[type="number"],
+  .filters button {
+    min-width: 100%;
   }
 
-  table thead {
-    display: none;
+  .charts-container canvas {
+    max-width: 100%;
+    height: 260px !important;
   }
 
-  table tr {
-    margin-bottom: 1rem;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    padding: 0.5rem 0.75rem;
-    border-radius: 6px;
+  table {
+    min-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 2rem;
   }
 
-  table td {
-    display: flex;
-    justify-content: space-between;
-    padding: 0.4rem 0;
+  h2 {
+    font-size: 1.4rem;
+  }
+
+  .details {
+    max-height: 180px;
     font-size: 0.9rem;
-  }
-
-  table td::before {
-    content: attr(data-label);
-    font-weight: bold;
-    flex: 1;
-    color: #002f6c;
   }
 }

@@ -1,88 +1,57 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-import logging
-from models import fetch_all_transactions, get_transaction_by_id, get_summary
+import mysql.connector
+from mysql.connector import Error
 
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:3000"])  # Restrict CORS to your frontend origin
+CORS(app)  # Enable CORS for all routes
 
-# Configure basic logging
-logging.basicConfig(level=logging.INFO)
+# MySQL connection configuration
+db_config = {
+    'host': 'localhost',
+    'user': 'momo_dashboard_user',
+    'password': 'MoMoDashboardUser123!',
+    'database': 'my_momo_dashboard_db'
+}
 
-def parse_int(value, field_name):
-    if value is None:
+def get_db_connection():
+    try:
+        connection = mysql.connector.connect(**db_config)
+        return connection
+    except Error as e:
+        app.logger.error(f"MySQL connection error: {e}")
         return None
-    try:
-        return int(value)
-    except ValueError:
-        raise ValueError(f"Invalid integer for '{field_name}': {value}")
 
-def validate_filters(args):
-    filters = {}
+@app.route('/')
+def index():
+    return jsonify({'message': 'Welcome to the MTN MoMo SMS Dashboard API 🎉'})
 
-    # Validate type (string, optional)
-    tx_type = args.get("type")
-    if tx_type:
-        filters["type"] = tx_type
-
-    # Validate min and max amounts (integers, optional)
-    try:
-        filters["min"] = parse_int(args.get("min"), "min")
-        filters["max"] = parse_int(args.get("max"), "max")
-    except ValueError as e:
-        raise e
-
-    # Validate start and end dates (strings, optional)
-    # Assuming ISO format or as expected by models.py
-    start = args.get("start")
-    end = args.get("end")
-    if start:
-        filters["start"] = start
-    if end:
-        filters["end"] = end
-
-    return filters
-
-@app.route("/transactions", methods=["GET"])
+@app.route('/api/transactions', methods=['GET'])
 def get_transactions():
+    connection = get_db_connection()
+    if not connection:
+        return jsonify({'error': 'Could not connect to the database'}), 500
+
+    cursor = connection.cursor(dictionary=True)
     try:
-        filters = validate_filters(request.args)
-        logging.info(f"Filters applied: {filters}")
-        data = fetch_all_transactions(filters)
-        return jsonify(data)
-    except ValueError as ve:
-        logging.warning(f"Validation error: {ve}")
-        return jsonify({"error": str(ve)}), 400
-    except Exception as e:
-        logging.error(f"Error fetching transactions: {e}", exc_info=True)
-        return jsonify({"error": "Failed to fetch transactions"}), 500
+        query = "SELECT * FROM transactions ORDER BY transaction_date DESC"
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        return jsonify(rows)
+    except Error as e:
+        app.logger.error(f"MySQL query error: {e}")
+        return jsonify({'error': 'Database query failed'}), 500
+    finally:
+        cursor.close()
+        connection.close()
 
-@app.route("/transaction/<int:tx_id>", methods=["GET"])
-def get_transaction(tx_id):
-    try:
-        data = get_transaction_by_id(tx_id)
-        if data:
-            return jsonify(data)
-        else:
-            return jsonify({"error": "Transaction not found"}), 404
-    except Exception as e:
-        logging.error(f"Error fetching transaction {tx_id}: {e}", exc_info=True)
-        return jsonify({"error": "Failed to fetch transaction"}), 500
+@app.errorhandler(404)
+def not_found(e):
+    return jsonify({'error': 'Not found'}), 404
 
-@app.route("/summary", methods=["GET"])
-def get_summary_data():
-    try:
-        data = get_summary()
-        return jsonify(data)
-    except Exception as e:
-        logging.error(f"Error fetching summary: {e}", exc_info=True)
-        return jsonify({"error": "Failed to fetch summary"}), 500
+@app.errorhandler(500)
+def internal_error(e):
+    return jsonify({'error': 'Internal server error'}), 500
 
-# Global error handler for unexpected exceptions
-@app.errorhandler(Exception)
-def handle_exception(e):
-    logging.error(f"Unhandled exception: {e}", exc_info=True)
-    return jsonify({"error": "An unexpected error occurred"}), 500
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True)

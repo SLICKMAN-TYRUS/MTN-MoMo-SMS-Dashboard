@@ -40,7 +40,7 @@ def extract_transaction_type(body):
 
 def parse_body(body):
     tx_type = extract_transaction_type(body)
-    if not tx_type or tx_type == "OTP / Non-transactional":
+    if not tx_type:
         return None
 
     tx = {
@@ -49,23 +49,28 @@ def parse_body(body):
     }
 
     try:
-        # Amount
-        amount_match = re.search(r"received\s([\d,]+)\s*RWF", body)
+        # Try to extract 'received' or 'payment of' amount
+        amount_match = (
+            re.search(r"received\s([\d,]+)\s*RWF", body, re.IGNORECASE)
+            or re.search(r"payment of\s([\d,]+)\s*RWF", body, re.IGNORECASE)
+        )
         if amount_match:
             tx["amount"] = normalize_amount(amount_match.group(1))
+        else:
+            return None  # Skip if amount is missing
 
-        # Date and Time
+        # Extract datetime
         date_match = re.search(r"at\s(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})", body)
         if date_match:
             raw_dt = date_match.group(1).strip()
             try:
                 dt = datetime.strptime(raw_dt, "%Y-%m-%d %H:%M:%S")
                 tx["datetime"] = dt.strftime("%Y-%m-%d %H:%M:%S")
-            except:
+            except ValueError:
                 tx["datetime"] = raw_dt
 
         # Sender
-        sender_match = re.search(r"from\s(.+?)\s\(", body)
+        sender_match = re.search(r"from\s(.+?)\s", body)
         if sender_match:
             tx["sender"] = sender_match.group(1).strip()
 
@@ -75,16 +80,16 @@ def parse_body(body):
             tx["balance"] = normalize_amount(balance_match.group(1))
 
         # Transaction ID
-        txid_match = re.search(r"(TxId|Financial Transaction Id)[:\s]*([0-9]+)", body)
+        txid_match = re.search(r"(TxId|Transaction ID|Financial Transaction Id)[:\s]*([0-9]+)", body)
         if txid_match:
             tx["transaction_id"] = txid_match.group(2)
 
         return tx
 
-    except Exception as err:
+    except Exception:
         return None
 
-# Start processing
+# Start parsing
 with open(LOG_FILE, "w", encoding="utf-8") as log_file:
     try:
         tree = ET.parse(INPUT_FILE)
@@ -100,15 +105,14 @@ with open(LOG_FILE, "w", encoding="utf-8") as log_file:
             parsed = parse_body(body)
             if parsed:
                 cleaned_data.append(parsed)
-                print("Parsed:", parsed)
             else:
-                log_file.write(f"[Ignored] {body}\n\n")
+                log_file.write(f"[Skipped] {body}\n\n")
 
     except Exception as e:
         log_file.write(f"[Critical Error] Failed to parse XML: {str(e)}\n")
         print("Critical error:", str(e))
 
-# Save output
+# Output cleaned JSON
 with open(OUTPUT_FILE, "w", encoding="utf-8") as out:
     json.dump(cleaned_data, out, indent=2, ensure_ascii=False)
 
