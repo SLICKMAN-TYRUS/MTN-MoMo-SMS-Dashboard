@@ -149,7 +149,7 @@ I have also uploaded the .zip archive project file containing all the files and 
 Video Walkthrough
 
 Please see the accompanying video demonstration here:
-\[Insert YouTube or Google Drive link here]
+[https://youtu.be/RRA_hpPL-iI]
 
 
 
