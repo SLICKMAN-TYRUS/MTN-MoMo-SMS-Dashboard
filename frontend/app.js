@@ -6,7 +6,8 @@ window.onload = async () => {
     document.getElementById("loader").style.display = "block";
 
     // Load local static JSON file instead of Flask API
-    const response = await fetch("cleaned_transactions.json");
+    const response = await fetch("http://localhost:5000/api/transactions")
+
 
 
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
